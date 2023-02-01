@@ -1,0 +1,1 @@
+# payment-java-hexagonal
