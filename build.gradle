@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+}
+
+subprojects {
+    group = 'com.eightbits.payment.eft'
+    version = '0.0.1-SNAPSHOT'
+
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
