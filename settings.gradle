@@ -5,12 +5,17 @@ pluginManagement {
         id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
         id 'org.jetbrains.kotlin.plugin.spring' version "$kotlinVersion"
         id 'org.jetbrains.kotlin.kapt' version "$kotlinVersion"
+
         id 'org.openapi.generator' version '7.2.0'
     }
 }
 
 rootProject.name = 'eft-payment'
-//include 'domain:products'
+
+include 'domain:common'
+include 'domain:hsm'
+include 'domain:card'
+include 'domain:payment'
 //include 'infrastructure:common'
 include 'infrastructure:web'
 //include 'infrastructure:repository'

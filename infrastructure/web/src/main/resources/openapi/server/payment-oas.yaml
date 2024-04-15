@@ -1,0 +1,219 @@
+openapi: 3.0.3
+info:
+  title: Eft Payment Service
+  description: Eft Payment Service
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local server
+  - url: http://localhost:8081
+    description: Management server
+paths:
+  /payments:
+    get:
+      summary: Retrieve all payments for given card number
+      description: >-
+        Retrieve all payments for given card number
+      tags:
+        - Payment
+      operationId: retrievePayments
+      parameters:
+        - name: cardNumber
+          in: query
+          description: Card number
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{16}$'
+        - name: transactionDate
+          in: query
+          description: Transaction date
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: A list of payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+        '400':
+          description: Invalid card number
+        '404':
+          description: Payments not found
+  #  Balance Inquiry
+  /balance-inquiry:
+    post:
+      summary: Retrieve balance for given card number
+      description: >-
+        Retrieve balance for given card number
+      tags:
+        - Payment
+      operationId: balanceInquiry
+      parameters:
+        - name: cardNumber
+          in: query
+          description: Card number
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{16}$'
+      responses:
+        '200':
+          description: A balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Balance'
+        '400':
+          description: Invalid card number
+        '404':
+          description: Balance not found
+  /cash-widthrawal:
+    post:
+      summary: Withdraw cash for given card number
+      operationId: cashWithdrawal
+      parameters:
+        - name: cardNumber
+          in: query
+          description: Card number
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{16}$'
+        - name: amount
+          in: query
+          description: Amount
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: A cash withdrawal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CashWithdrawal'
+        '400':
+          description: Invalid card number
+        '404':
+          description: Cash withdrawal not found
+  /fund-transfer:
+    post:
+      summary: Transfer funds for given card number
+      operationId: fundTransfer
+      parameters:
+        - name: cardNumber
+          in: query
+          description: Card number
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{16}$'
+        - name: beneficiaryCardNumber
+          in: query
+          description: Beneficiary card number
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{16}$'
+        - name: amount
+          in: query
+          description: Amount
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: A fund transfer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FundTransfer'
+        '400':
+          description: Invalid card number
+        '404':
+          description: Fund transfer not found
+  /payment:
+    post:
+      summary: Make payment for given card number
+      operationId: makePayment
+      parameters:
+        - name: cardNumber
+          in: query
+          description: Card number
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{16}$'
+        - name: amount
+          in: query
+          description: Amount
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: A payment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          description: Invalid card number
+        '404':
+          description: Payment not found
+components:
+  schemas:
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+        cardNumber:
+          type: string
+        amount:
+          type: number
+        transactionDate:
+          type: string
+          format: date
+    Balance:
+      type: object
+      properties:
+        id:
+          type: string
+        cardNumber:
+          type: string
+        balance:
+          type: number
+    CashWithdrawal:
+      type: object
+      properties:
+        id:
+          type: string
+        cardNumber:
+          type: string
+        amount:
+          type: number
+    FundTransfer:
+      type: object
+      properties:
+        id:
+          type: string
+        cardNumber:
+          type: string
+        beneficiaryCardNumber:
+          type: string
+        amount:
+          type: number
+
+tags:
+  - name: Payment
+    description: Payment operations
