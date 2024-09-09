@@ -1,21 +1,62 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.2.4'
-	id 'io.spring.dependency-management' version '1.1.4'
-}
+	id 'org.springframework.boot'
+	id 'io.spring.dependency-management'
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_21
-}
-
-repositories {
-	mavenCentral()
+	id 'org.openapi.generator'
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+//	compileOnly 'jakarta.annotation:jakarta.annotation-api:2.1.1'
+
+	implementation 'org.springdoc:springdoc-openapi-data-rest:1.6.13'
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
+	implementation 'org.springdoc:springdoc-openapi-kotlin:1.6.13'
+
+	implementation 'org.openapitools:jackson-databind-nullable:0.2.6'
+
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs("$buildDir/generated/openapi/server/src/main/java")
+		}
+	}
+}
+
+def basePackage = 'com.eightbits.eco.retail.infrastructure.generated.v1'
+
+openApiGenerate {
+	generatorName = 'spring'
+	library = 'spring-boot'
+	inputSpec = "$projectDir/src/main/resources/openapi/server/payment-oas.yaml"
+	outputDir = "${layout.buildDirectory.get().asFile}/generated/openapi/server"
+	packageName = basePackage
+	apiPackage = "${basePackage}.api"
+	modelPackage = "${basePackage}.model"
+	invokerPackage = "${basePackage}.invoker"
+//    modelNameSuffix = "Dto"
+	enablePostProcessFile = true
+	skipOverwrite = false
+	configOptions.set([
+			interfaceOnly       : 'true',
+			useSpringBoot3      : 'true',
+			enumPropertyNaming  : "original",
+			serializationLibrary: 'jackson',
+			dateLibrary         : 'java8'
+	])
+	importMappings.set([
+			Locale: "java.util.Locale",
+	])
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+	dependsOn('openApiGenerate')
 }
 
 tasks.named('test') {
